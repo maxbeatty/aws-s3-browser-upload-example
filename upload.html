@@ -1,0 +1,90 @@
+<!doctype html>
+<head>
+  <meta charset=utf8>
+</head>
+
+<input type=file>
+
+<script>
+  var AWS_ACCESS_KEY_ID = 'AKIAIOSFODNN7EXAMPLE';
+
+  Date.prototype.toBasicISOString = function() {
+    return this.toISOString().replace(/[:\-]|\.\d{3}/g, '');
+  }
+
+  function getDateStr(d) {
+    function pad(num) {
+      return num.toString().length === 1 ? '0' + num : num
+    }
+
+    return d.getFullYear().toString() + pad(d.getMonth() + 1) + pad(d.getDate())
+  }
+
+  document.querySelector('input').addEventListener('change', function(evt) {
+    var file = evt.currentTarget.files[0],
+    d = new Date,
+    algorithm = 'AWS4-HMAC-SHA256',
+    bucket = 'isocket-chat-attach-development',
+    credential = [
+        AWS_ACCESS_KEY_ID,
+        getDateStr(d),
+        'us-east-1',
+        's3',
+        'aws4_request'
+      ].join('/'),
+    dStr = d.toBasicISOString(),
+    key = Date.now().toString() + '/' + file.name, // including slash will create folder
+    signRequest = new XMLHttpRequest;
+
+    signRequest.addEventListener('load', function(resp) {
+      var xhr = new XMLHttpRequest,
+      fd = new FormData;
+
+      fd.append('key', key); // order matters?
+      fd.append('file', file);
+      fd.append('policy', resp.policy);
+      fd.append('x-amz-algorithm', algorithm);
+      fd.append('x-amz-credential', credential);
+      fd.append('x-amz-date', dStr);
+      fd.append('x-amz-signature', resp.signature);
+
+      ['error', 'abort'].forEach(function(event) {
+        xhr.addEventListener(event, function(evt) {
+          console.log(event, evt);
+        });
+      });
+
+      var progress = document.createElement('progress');
+      progress.setAttribute('max', 100);
+      progress.setAttribute('value', 0);
+      document.body.appendChild(progress);
+
+      xhr.upload.addEventListener('progress', function(evt) {
+        progress.value = Math.round((evt.loaded * 100) / evt.total);
+      });
+
+      var s3Url = 'https://' + bucket + '.s3.amazonaws.com/';
+
+      xhr.addEventListener('load', function(evt) {
+        var link = document.createElement('a');
+        link.setAttribute('href', s3Url + key);
+        link.innerText = 'Uploaded File';
+        document.body.appendChild(link);
+      });
+
+      xhr.open('POST', s3Url, true);
+      xhr.send(fd);
+    });
+
+    signRequest.open('POST', '/sign', true);
+    signRequest.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    signRequest.send(JSON.stringify({
+      acl: 'public-read',
+      bucket: bucket,
+      key: key,
+      'x-amz-algorithm': algorithm,
+      'x-amz-credential': credential,
+      'x-amz-date': dStr
+    }));
+  });
+</script>
