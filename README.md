@@ -16,14 +16,14 @@ You'll need an access key id (`AWS_ACCESS_KEY_ID`) and secret access key (`AWS_S
 2. On their profile, scroll down to the Security Credentials section and "Manage Access Keys"
 3. "Create Access Key" (limit 2 per user)
 
-**Replace `AWS_ACCESS_KEY_ID` in `upload.html` and use your own `AWS_SECRET_ACCESS_KEY` when starting the node server below**
+**Replace [`AWS_ACCESS_KEY_ID` in `upload.html`](https://github.com/maxbeatty/aws-s3-browser-upload-example/blob/master/upload.html#L9) and use your own `AWS_SECRET_ACCESS_KEY` when starting the node server below**
 
 ### S3
 
 1. "Create Bucket" in S3
 2. [Generate Policy](http://awspolicygen.s3.amazonaws.com/policygen.html) (sample below)
 
-```
+    ```
 {
   "Version": "2008-10-17",
   "Id": "Policy123456",
@@ -41,12 +41,12 @@ You'll need an access key id (`AWS_ACCESS_KEY_ID`) and secret access key (`AWS_S
     }
     ]
   }
-```
+    ```
 
 3. "Edit bucket policy" in the Permissions section of your bucket's Properties (save the policy you generated)
 4. "Edit CORS Configuration" in the Permissions section of your bucket's Properties (sample below)
 
-```
+    ```
 <?xml version="1.0" encoding="UTF-8"?>
 <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
   <CORSRule>
@@ -55,7 +55,7 @@ You'll need an access key id (`AWS_ACCESS_KEY_ID`) and secret access key (`AWS_S
     <AllowedHeader>*</AllowedHeader>
   </CORSRule>
 </CORSConfiguration>
-```
+    ```
 
 5. "Save" your Permissions (just in case the other saves didn't save?)
 
@@ -63,14 +63,8 @@ Your bucket should now be ready to upload files to.
 
 ## Usage
 
-1. Start server:
-
-```
-AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY node index.js
-```
-
+1. Start server (`AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY node index.js`)
 2. Open [http://localhost:8000](http://localhost:8000)
-
 3. Choose a file to upload (you'll see a progress bar and a link to your file when complete)
 
 ## Questions? Problems?
