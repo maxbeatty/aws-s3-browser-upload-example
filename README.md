@@ -1,7 +1,8 @@
 # AWS S3 Browser Upload Example
----
 
 Vanilla JavaScript (and Node.js) example to upload a file directly, asynchronously (AJAX) to Amazon Web Services (AWS) Simple Storage Service (S3) from the browser using AWS Signature Version 4
+
+![example workflow](example.gif)
 
 ## Setup
 
